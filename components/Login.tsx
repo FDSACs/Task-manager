@@ -18,7 +18,7 @@ const Login: React.FC = () => {
         <div className="flex justify-center">
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
             <img 
-              src="https://www.acs.com.sa/wp-content/uploads/2021/03/ACS-Logo.png" 
+              src="./ACS_LOGO.png" 
               alt="ACS Logo" 
               className="h-20 w-auto object-contain"
             />
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
           onClick={handleLogin}
           className="w-full flex items-center justify-center gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 py-4 px-6 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm hover:shadow-md active:scale-95 group"
         >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pjax/google.png" alt="Google" className="h-6 w-6" />
+          <img src="./GoogleLogoSignin.png" alt="Google" className="h-6 w-6" />
           Continue with Google
         </button>
 
