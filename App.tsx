@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import KanbanBoard from './components/KanbanBoard';
@@ -7,8 +6,8 @@ import ThemeToggle from './components/ThemeToggle';
 import Login from './components/Login';
 import { Task } from './types';
 import { taskService } from './services/taskService';
-// Fix: Import auth and logout from local service; import firebase for namespaced types
 import { auth, logout } from './services/firebase';
+// Ensure 'import firebase from "firebase/app"' is GONE
 
 
 const App: React.FC = () => {
