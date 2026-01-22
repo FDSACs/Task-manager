@@ -9,7 +9,7 @@ import { Task } from './types';
 import { taskService } from './services/taskService';
 // Fix: Import auth and logout from local service; import firebase for namespaced types
 import { auth, logout } from './services/firebase';
-import firebase from 'firebase/app';
+
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
