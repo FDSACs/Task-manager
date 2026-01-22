@@ -1,0 +1,40 @@
+
+import { Task, TaskStatus } from '../types';
+
+const STORAGE_KEY = 'zenith_tasks';
+
+export const taskService = {
+  getTasks: (): Task[] => {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  },
+
+  saveTasks: (tasks: Task[]): void => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  },
+
+  addTask: (task: Omit<Task, 'id' | 'createdAt'>): Task => {
+    const tasks = taskService.getTasks();
+    const newTask: Task = {
+      ...task,
+      id: Math.random().toString(36).substr(2, 9),
+      createdAt: Date.now(),
+    };
+    taskService.saveTasks([...tasks, newTask]);
+    return newTask;
+  },
+
+  updateTaskStatus: (taskId: string, status: TaskStatus): Task[] => {
+    const tasks = taskService.getTasks();
+    const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, status } : t);
+    taskService.saveTasks(updatedTasks);
+    return updatedTasks;
+  },
+
+  deleteTask: (taskId: string): Task[] => {
+    const tasks = taskService.getTasks();
+    const updatedTasks = tasks.filter(t => t.id !== taskId);
+    taskService.saveTasks(updatedTasks);
+    return updatedTasks;
+  }
+};
