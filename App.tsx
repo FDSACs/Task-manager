@@ -7,12 +7,12 @@ import Login from './components/Login';
 import { Task } from './types';
 import { taskService } from './services/taskService';
 import { auth, logout } from './services/firebase';
-// Ensure 'import firebase from "firebase/app"' is GONE
 
+// 1. Import your logo using a relative path so Vite bundles it correctly
+import acsLogo from './ACS-Logo.png'; 
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  // Fix: Use namespaced User type to resolve 'User' export error
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,7 +31,6 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Fix: Use instance-based onAuthStateChanged to resolve 'onAuthStateChanged' export error
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -100,9 +99,10 @@ const App: React.FC = () => {
     <div className="min-h-screen p-4 md:p-8 bg-brand-light dark:bg-brand-dark text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <header className="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-          <div className="bg-white dark:bg-white/90 p-3 rounded-xl shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-white/10 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 backdrop-blur-md">
+            {/* 2. Use the imported 'acsLogo' variable here for the src attribute */}
             <img 
-              src="https://www.acs.com.sa/wp-content/uploads/2021/03/ACS-Logo.png" 
+              src={acsLogo} 
               alt="ACS Logo" 
               className="h-14 w-auto object-contain"
             />
