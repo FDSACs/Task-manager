@@ -8,8 +8,8 @@ import { Task } from './types';
 import { taskService } from './services/taskService';
 import { auth, logout } from './services/firebase';
 
-// 1. Import your logo using a relative path so Vite bundles it correctly
-import acsLogo from './ACS-Logo.png'; 
+
+import acsLogo from './ACS_LOGO.png'; 
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
