@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -10,9 +9,10 @@ interface ColumnProps {
   title: string;
   tasks: Task[];
   onDeleteTask: (id: string) => void;
+  onUpdateTask: (task: Task) => void; // Added this
 }
 
-const Column: React.FC<ColumnProps> = ({ id, title, tasks, onDeleteTask }) => {
+const Column: React.FC<ColumnProps> = ({ id, title, tasks, onDeleteTask, onUpdateTask }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: id,
   });
@@ -61,7 +61,12 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onDeleteTask }) => {
       <div className="flex flex-col gap-4">
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onDelete={onDeleteTask} />
+            <TaskCard 
+              key={task.id} 
+              task={task} 
+              onDelete={onDeleteTask} 
+              onUpdateTask={onUpdateTask} // Pass it down to TaskCard
+            />
           ))}
         </SortableContext>
         

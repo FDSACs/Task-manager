@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   DndContext,
@@ -8,14 +7,10 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  DragOverEvent,
-  DragStartEvent,
-  UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
+  sortableKeyboardCoordinates, // This is the line that was likely causing the error
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import Column from './Column';
@@ -25,9 +20,15 @@ interface KanbanBoardProps {
   tasks: Task[];
   onDeleteTask: (id: string) => void;
   onUpdateStatus: (id: string, status: TaskStatus) => void;
+  onUpdateTask: (task: Task) => void; 
 }
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onDeleteTask, onUpdateStatus }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ 
+  tasks, 
+  onDeleteTask, 
+  onUpdateStatus, 
+  onUpdateTask 
+}) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -52,7 +53,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onDeleteTask, onUpdate
     const taskId = active.id as string;
     const overId = over.id as string;
 
-    // Check if dragged over a column or another task
     const isColumn = columns.some(col => col.id === overId);
     
     if (isColumn) {
@@ -61,7 +61,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onDeleteTask, onUpdate
       }
     } else {
       const overTask = tasks.find(t => t.id === overId);
-      if (overTask && overTask.status !== tasks.find(t => t.id === taskId)?.status) {
+      const activeTask = tasks.find(t => t.id === taskId);
+      
+      if (overTask && activeTask && overTask.status !== activeTask.status) {
         onUpdateStatus(taskId, overTask.status);
       }
     }
@@ -81,6 +83,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onDeleteTask, onUpdate
             title={col.title} 
             tasks={tasks.filter(t => t.status === col.id)}
             onDeleteTask={onDeleteTask}
+            onUpdateTask={onUpdateTask} 
           />
         ))}
       </DndContext>

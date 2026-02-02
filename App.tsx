@@ -8,7 +8,6 @@ import { Task } from './types';
 import { taskService } from './services/taskService';
 import { auth, logout } from './services/firebase';
 
-
 import acsLogo from './ACS_LOGO.png'; 
 
 const App: React.FC = () => {
@@ -26,7 +25,7 @@ const App: React.FC = () => {
       const data = await taskService.getTasks();
       setTasks(data);
     } catch (err) {
-      console.error("Connection to backend failed. Is main.py running?", err);
+      console.error("Connection to backend failed.", err);
     }
   };
 
@@ -57,7 +56,7 @@ const App: React.FC = () => {
       setTasks(prev => [...prev, newTask]);
       setIsModalOpen(false);
     } catch (err) {
-      alert("Failed to save task to server.");
+      alert("Failed to save task.");
     }
   };
 
@@ -72,11 +71,26 @@ const App: React.FC = () => {
 
   const handleUpdateStatus = async (taskId: string, newStatus: Task['status']) => {
     try {
+      // Optimistic UI update
       setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
       await taskService.updateTaskStatus(taskId, newStatus);
     } catch (err) {
       loadTasks();
       alert("Update failed.");
+    }
+  };
+
+  // --- NEW: Handle Full Task Updates (Location Pins, etc.) ---
+  const handleUpdateTask = async (updatedTask: Task) => {
+    try {
+      // 1. Update the local React state
+      setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
+      
+      // 2. Persist the change (including location) to localStorage
+      await taskService.updateTask(updatedTask);
+    } catch (err) {
+      console.error("Update failed", err);
+      loadTasks(); // Revert to saved state if error occurs
     }
   };
 
@@ -100,7 +114,6 @@ const App: React.FC = () => {
       <header className="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
           <div className="bg-white dark:bg-white/10 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 backdrop-blur-md">
-            {/* 2. Use the imported 'acsLogo' variable here for the src attribute */}
             <img 
               src={acsLogo} 
               alt="ACS Logo" 
@@ -113,7 +126,7 @@ const App: React.FC = () => {
             </h1>
             <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              <p className="font-medium text-sm">Welcome, {user.displayName?.split(' ')[0]}</p>
+              <p className="font-medium text-sm">Welcome, {user.displayName?.split(' ')[0] || 'User'}</p>
             </div>
           </div>
         </div>
@@ -129,7 +142,7 @@ const App: React.FC = () => {
           </button>
           <div className="h-10 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
           <div className="flex items-center gap-3 pl-1">
-            <img src={user.photoURL || ''} alt="Profile" className="h-10 w-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm" />
+            <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.phoneNumber || 'User'}`} alt="Profile" className="h-10 w-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm" />
             <button 
               onClick={logout}
               className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-red-500 transition-all"
@@ -145,7 +158,8 @@ const App: React.FC = () => {
         <KanbanBoard 
           tasks={tasks} 
           onDeleteTask={handleDeleteTask} 
-          onUpdateStatus={handleUpdateStatus} 
+          onUpdateStatus={handleUpdateStatus}
+          onUpdateTask={handleUpdateTask} // CONNECTED NEW FUNCTION HERE
         />
       </main>
 
