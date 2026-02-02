@@ -4,8 +4,11 @@ import {
   GoogleAuthProvider, 
   signInWithPopup, 
   signOut,
-  RecaptchaVerifier, // Added for SMS security
-  signInWithPhoneNumber // Added for SMS sending
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  updateProfile,        // Added: To give SMS users a name
+  linkWithPhoneNumber,  // Added: To connect Phone to a Google account
+  PhoneAuthProvider     // Added: To handle credentials for linking
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -17,31 +20,39 @@ const firebaseConfig = {
   appId: "1:579427013158:web:454cf1e8797a1d79bf8ce7"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Auth
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-// Google Auth helper functions
+// --- Existing Helpers ---
 export const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
 export const logout = () => signOut(auth);
 
-/** * SMS OTP Helper Functions 
- **/
-
-// This sets up the invisible security check required by Google for SMS
+// --- SMS OTP Helpers ---
 export const setupRecaptcha = (containerId: string) => {
   return new RecaptchaVerifier(auth, containerId, {
-    size: 'invisible',
-    'callback': () => {
-      // reCAPTCHA solved, allow signInWithPhoneNumber.
-    }
+    size: 'invisible'
   });
 };
 
-// This sends the actual SMS to the user's phone
 export const sendOtp = (phoneNumber: string, appVerifier: any) => {
   return signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+};
+
+// --- New Profile & Linking Helpers ---
+
+/**
+ * Updates the current user's name (useful for SMS users)
+ */
+export const updateUserProfile = (displayName: string) => {
+  if (!auth.currentUser) return Promise.reject("No user logged in");
+  return updateProfile(auth.currentUser, { displayName });
+};
+
+/**
+ * Links a phone number to an already logged-in Google user
+ */
+export const linkPhoneToAccount = (phoneNumber: string, appVerifier: any) => {
+  if (!auth.currentUser) return Promise.reject("No user logged in");
+  return linkWithPhoneNumber(auth.currentUser, phoneNumber, appVerifier);
 };
